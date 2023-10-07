@@ -111,9 +111,15 @@ async fn main() {
     let app = Router::new()
         .route("/", get(redirect));
     
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+    let port = std::env::var("PORT").unwrap_or(String::from("8080"));
+    println!("Listening on port {}", port);
+
+    if let Ok(port) = port.parse::<u16>() {
+        let addr = SocketAddr::from(([0, 0, 0, 0], port));
+        axum::Server::bind(&addr)
+            .serve(app.into_make_service())
+            .await
+            .unwrap();
+        return;
+    }
 }
